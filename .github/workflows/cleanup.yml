@@ -29,68 +29,13 @@ jobs:
       run: |
         echo "NOTION_API_KEY=${{ secrets.NOTION_API_KEY }}" >> .env
         echo "NOTION_DATABASE_ID=${{ secrets.NOTION_DATABASE_ID }}" >> .env
+        echo "SMTP_EMAIL=${{ secrets.SMTP_EMAIL }}" >> .env
+        echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> .env
+        echo "SMTP_SERVER=${{ secrets.SMTP_SERVER }}" >> .env
+        echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> .env
+        echo "NOTIFICATION_EMAIL=${{ secrets.NOTIFICATION_EMAIL }}" >> .env
 
-    - name: Cleanup old articles (Dry Run)
+    - name: Run Cleanup
       run: |
-        echo "Running cleanup in dry-run mode..."
-        python tools/cleanup_notion.py --older-than 30 --no-dry-run
-
-    - name: Send Cleanup Report
-      if: always()
-      env:
-        SMTP_EMAIL: ${{ secrets.SMTP_EMAIL }}
-        SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-        SMTP_SERVER: ${{ secrets.SMTP_SERVER || 'smtp.gmail.com' }}
-        SMTP_PORT: ${{ secrets.SMTP_PORT || '587' }}
-        NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
-      run: |
-        python -c "
-import os
-import smtplib
-from email.mime.text import MIMEText
-from datetime import datetime
-
-smtp_email = os.getenv('SMTP_EMAIL')
-smtp_password = os.getenv('SMTP_PASSWORD')
-recipient = os.getenv('NOTIFICATION_EMAIL', smtp_email)
-
-if not smtp_email or not smtp_password:
-    print('[*] Email not configured')
-    exit(0)
-
-msg = MIMEText(f'''
-Notion Database Cleanup Report
-
-Time: {datetime.now().strftime('%Y-%m-%d %H:%M')} UTC
-
-The monthly Notion database cleanup has been scheduled.
-
-Action: Articles older than 30 days will be deleted
-Status: Automatic cleanup is ENABLED
-
-What this does:
-- Removes old 'Not Reviewed' articles (older than 30 days)
-- Removes old 'Draft' articles (older than 30 days)
-- Keeps 'Approved' and 'Posted' articles forever
-- Runs automatically on the 1st of every month
-
-To manually cleanup:
-1. Run: python tools/cleanup_notion.py
-2. Choose your criteria
-3. Confirm deletion
-
-To disable automatic cleanup, disable the 'Cleanup Notion Database' workflow in GitHub Actions.
-''')
-
-msg['Subject'] = f'Notion Database Cleanup - {datetime.now().strftime(\"%Y-%m-%d\")}'
-msg['From'] = smtp_email
-msg['To'] = recipient
-
-server = smtplib.SMTP(os.getenv('SMTP_SERVER', 'smtp.gmail.com'), int(os.getenv('SMTP_PORT', '587')))
-server.starttls()
-server.login(smtp_email, smtp_password)
-server.send_message(msg)
-server.quit()
-
-print('[+] Cleanup report sent')
-"
+        echo "Running monthly Notion database cleanup..."
+        python tools/cleanup_notion.py --older-than 30
