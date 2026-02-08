@@ -1,0 +1,56 @@
+name: Auto-Post to LinkedIn
+
+on:
+  schedule:
+    # Run every 2 hours (at minute 0 past every 2nd hour)
+    # This uses ~360 GitHub Actions minutes/month (well within free tier)
+    - cron: '0 */2 * * *'
+  workflow_dispatch:  # Allow manual triggering from GitHub Actions tab
+
+jobs:
+  auto-post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5  # Don't run longer than 5 minutes
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Create .env file
+      run: |
+        echo "NOTION_API_KEY=${{ secrets.NOTION_API_KEY }}" >> .env
+        echo "NOTION_DATABASE_ID=${{ secrets.NOTION_DATABASE_ID }}" >> .env
+        echo "LINKEDIN_CLIENT_ID=${{ secrets.LINKEDIN_CLIENT_ID }}" >> .env
+        echo "LINKEDIN_CLIENT_SECRET=${{ secrets.LINKEDIN_CLIENT_SECRET }}" >> .env
+        echo "LINKEDIN_REDIRECT_URI=http://localhost:8000/callback" >> .env
+        echo "SMTP_EMAIL=${{ secrets.SMTP_EMAIL }}" >> .env
+        echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> .env
+        echo "SMTP_SERVER=${{ secrets.SMTP_SERVER }}" >> .env
+        echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> .env
+        echo "NOTIFICATION_EMAIL=${{ secrets.NOTIFICATION_EMAIL }}" >> .env
+
+    - name: Upload LinkedIn token (if exists)
+      continue-on-error: true
+      uses: actions/download-artifact@v4
+      with:
+        name: linkedin-token
+        path: .
+
+    - name: Run Auto-Poster
+      run: |
+        python tools/auto_poster.py
+
+    - name: Send Failure Notification
+      if: failure()
+      run: python tools/send_failure_notification.py "Auto-Post to LinkedIn"
