@@ -45,18 +45,23 @@ def cleanup_notion(days_old=30, status=None, dry_run=True):
         if status:
             print(f"    Status filter: {status}")
         print(f"    Mode: {'DRY RUN (no actual deletion)' if dry_run else 'LIVE (will delete)'}")
+        print(f"    Current date: {datetime.now().strftime('%Y-%m-%d')}")
         print()
 
         # Search for pages in the database
+        print("[*] Searching Notion database...")
         response = notion.search()
         all_pages = response.get('results', [])
+        print(f"[*] Notion search returned {len(all_pages)} total items")
+
         db_id_clean = database_id.replace('-', '')
+        print(f"[*] Looking for database ID: {db_id_clean}")
 
         # Filter pages from our database
         pages = [p for p in all_pages
                  if p.get('parent', {}).get('database_id', '').replace('-', '') == db_id_clean]
 
-        print(f"[+] Found {len(pages)} total pages in database\n")
+        print(f"[+] Found {len(pages)} total pages in target database\n")
 
         # Calculate cutoff date
         cutoff_date = datetime.now() - timedelta(days=days_old)
@@ -93,7 +98,9 @@ def cleanup_notion(days_old=30, status=None, dry_run=True):
                 })
 
         if not pages_to_delete:
-            print("[*] No pages to delete. Database is clean!\n")
+            print("[*] No pages to delete. Database is clean!")
+            print(f"[*] Checked {len(pages)} pages, none matched deletion criteria")
+            print(f"[*] Cutoff date: {cutoff_date.strftime('%Y-%m-%d')}")
             return 0
 
         # Show pages that would be deleted
