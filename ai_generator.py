@@ -86,7 +86,7 @@ LINKEDIN POST RULES:
 - Engaging hook to grab attention
 - Key insight or takeaway
 - Include specific details and context
-- Optional: include article URL at the end
+- IMPORTANT: MUST include the actual article URL at the end (use the exact URL provided in the article data above)
 - Write as if you're sharing something valuable with your network
 - Make it worth reading regardless of length
 
@@ -113,7 +113,7 @@ LINKEDIN POST:
 - Engaging hook or opening
 - Key insight from the article (1-2 lines)
 - Why it matters or takeaway (1 line)
-- Optional: Article URL at the end]
+- REQUIRED: The actual article URL at the end (use the exact URL from the article data provided above)]
 - Keep it under the "see more" cutoff for maximum engagement]
 
 [Repeat for ARTICLE 2, ARTICLE 3, ARTICLE 4, and ARTICLE 5 - all 5 articles are REQUIRED]
@@ -249,7 +249,7 @@ LINKEDIN POST RULES:
 - Engaging hook to grab attention
 - Key insight or takeaway
 - Include specific details and context
-- Optional: include article URL at the end
+- IMPORTANT: MUST include the actual article URL at the end (use the exact URL provided in the article data above)
 - Write as if you're sharing something valuable with your network
 - Make it worth reading regardless of length
 
@@ -276,7 +276,7 @@ LINKEDIN POST:
 - Engaging hook or opening
 - Key insight from the article (1-2 lines)
 - Why it matters or takeaway (1 line)
-- Optional: Article URL at the end]
+- REQUIRED: The actual article URL at the end (use the exact URL from the article data provided above)]
 - Keep it under the "see more" cutoff for maximum engagement]
 
 [Repeat for ARTICLE 2, ARTICLE 3, ARTICLE 4, and ARTICLE 5 - all 5 articles are REQUIRED]
