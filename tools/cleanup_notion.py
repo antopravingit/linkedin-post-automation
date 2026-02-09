@@ -39,7 +39,6 @@ def cleanup_notion(days_old=30, status=None, dry_run=True):
 
         notion = Client(auth=notion_api_key)
 
-    try:
         print(f"[*] Cleaning up Notion database...")
         print(f"    Database ID: {database_id}")
         print(f"    Articles older than: {days_old} days")
