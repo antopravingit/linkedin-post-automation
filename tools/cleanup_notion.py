@@ -74,9 +74,11 @@ def cleanup_notion(days_old=30, status=None, dry_run=True):
             title_obj = page.get('properties', {}).get('Title', {}).get('title', [])
             title = title_obj[0].get('plain_text', 'Unknown') if title_obj else 'Unknown'
 
-            # Parse created time
+            # Parse created time and remove timezone info for comparison
             try:
                 created_date = datetime.fromisoformat(created_time.replace('Z', '+00:00'))
+                # Remove timezone info to make comparison work
+                created_date = created_date.replace(tzinfo=None)
             except:
                 continue
 
