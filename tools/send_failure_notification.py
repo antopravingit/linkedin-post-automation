@@ -33,6 +33,8 @@ def send_failure_notification(workflow_name: str, error_message: str = ""):
     msg['To'] = recipient
 
     # Email body
+    error_details = error_message if error_message else "(no additional details)"
+
     body = f'''
 ⚠️ WORKFLOW FAILURE ALERT ⚠️
 
@@ -41,7 +43,8 @@ Time: {datetime.now().strftime('%Y-%m-%d %H:%M')} UTC
 
 The GitHub Actions workflow has FAILED.
 
-{"Error details:\n" + error_message if error_message else ""}
+Error details:
+{error_details}
 
 What you should do:
 1. Check the GitHub Actions tab for detailed logs
