@@ -25,8 +25,8 @@ jobs:
       run: |
         echo "SMTP_EMAIL=${{ secrets.SMTP_EMAIL }}" >> .env
         echo "SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}" >> .env
-        echo "SMTP_SERVER=${{ secrets.SMTP_SERVER || 'smtp.gmail.com' }}" >> .env
-        echo "SMTP_PORT=${{ secrets.SMTP_PORT || '587' }}" >> .env
+        echo "SMTP_SERVER=smtp.gmail.com" >> .env
+        echo "SMTP_PORT=587" >> .env
         echo "NOTIFICATION_EMAIL=${{ secrets.NOTIFICATION_EMAIL }}" >> .env
 
     - name: Intentionally Fail
