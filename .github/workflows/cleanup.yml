@@ -38,4 +38,4 @@ jobs:
     - name: Run Cleanup
       run: |
         echo "Running monthly Notion database cleanup..."
-        python tools/cleanup_notion.py --older-than 30
+        python tools/cleanup_notion.py --older-than 0 --status "Draft" --no-dry-run
