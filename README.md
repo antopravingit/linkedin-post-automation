@@ -69,7 +69,9 @@ GitHub Actions:
     └── cleanup.yml                 # Monthly database cleanup
 ```
 
-## Weekly Workflow
+## Two Modes of Operation
+
+### Mode 1: Weekly Automation (Default) 🔄
 
 **Monday Morning (Automatic)**:
 - GitHub Actions runs at 9 AM
@@ -85,6 +87,29 @@ GitHub Actions:
 
 **Throughout Week (Automatic)**:
 - Auto-poster posts approved articles every 2 hours
+
+**Cost**: ~$3/month | **Speed**: Fast | **Best for**: Regular posting
+
+---
+
+### Mode 2: On-Demand Agent (When You Need Focus) 🎯
+
+**When you want specific topics**:
+```bash
+# Find posts about a specific topic
+python agent_curator.py --topic "AI regulation" --count 3
+
+# Interactive mode
+python agent_curator.py
+# → Enter topic, select style, get targeted posts
+```
+
+**Use cases**:
+- "I need posts about AI ethics this week"
+- "Find me technical LLM tutorials"
+- "What's new in AI for healthcare?"
+
+**Cost**: $0.50-1 per search | **Speed**: Moderate | **Best for**: Targeted content
 
 ## 16 News Sources
 MIT Technology Review AI, Ars Technica, TechCrunch AI, VentureBeat AI, AI News, Towards Data Science, Wired, The Verge, Nature AI, Science Daily AI, Fast Company, Harvard Business Review Technology, ArXiv AI, Machine Learning Mastery, KDnuggets, The Gradient, DeepLearning.AI
