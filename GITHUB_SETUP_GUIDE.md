@@ -33,16 +33,58 @@ Once pushed, you need to add your API keys as secrets:
 
 ### Add These Secrets:
 
-| Secret Name | Value |
-|------------|-------|
-| `OPENAI_API_KEY` | Your OpenAI API key (starts with `sk-proj-`) |
-| `NOTION_API_KEY` | `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` |
-| `NOTION_DATABASE_ID` | `2ffc9105237e80179f01e2492c6cf6b9` |
-| `LINKEDIN_CLIENT_ID` | `86wb5sak4k0t0l` |
-| `LINKEDIN_CLIENT_SECRET` | `WPL_AP1.6GcBGCIQYlmZ8ly9.vwbW1g==` |
-| `SMTP_EMAIL` | `pravin.anto@gmail.com` |
-| `SMTP_PASSWORD` | `frstehctebjevbcs` |
-| `NOTIFICATION_EMAIL` | `pravinn.anto@gmail.com` |
+**IMPORTANT:** Get your actual API keys from your services. See "How to Get Your API Keys" section below.
+
+| Secret Name | How to Get It |
+|------------|---------------|
+| `OPENAI_API_KEY` | From https://platform.openai.com/api-keys |
+| `NOTION_API_KEY` | From https://www.notion.so/my-integrations (click your integration, copy "Internal Integration Token") |
+| `NOTION_DATABASE_ID` | From your Notion database URL (the 32-character string after `/` and before `?`) |
+| `LINKEDIN_CLIENT_ID` | From https://www.linkedin.com/developers/apps |
+| `LINKEDIN_CLIENT_SECRET` | From your LinkedIn app details |
+| `SMTP_EMAIL` | Your Gmail address |
+| `SMTP_PASSWORD` | Gmail app-specific password (not your regular password) |
+| `SMTP_SERVER` | `smtp.gmail.com` |
+| `SMTP_PORT` | `587` |
+| `NOTIFICATION_EMAIL` | Your notification email address |
+
+### How to Get Your API Keys:
+
+**Notion API Key:**
+1. Go to https://www.notion.so/my-integrations
+2. Find or create your integration
+3. Copy the "Internal Integration Token" (starts with `ntn_`)
+4. **IMPORTANT:** If your key was rotated, use the NEW token from Notion, not the old one
+
+**Notion Database ID:**
+1. Open your Notion database
+2. Copy the URL - it looks like: `https://notion.so/workspace/[DATABASE_ID]?v=...`
+3. The Database ID is the 32-character string between `/` and `?`
+
+**LinkedIn Credentials:**
+1. Go to https://www.linkedin.com/developers/apps
+2. Create an app or use existing one
+3. Copy Client ID and Client Secret
+
+**OpenAI API Key:**
+1. Go to https://platform.openai.com/api-keys
+2. Create a new secret key
+3. Copy the key (starts with `sk-proj-`)
+
+**Gmail App Password:**
+1. Go to https://myaccount.google.com/security
+2. Enable 2-Step Verification if not enabled
+3. Go to "App passwords"
+4. Generate a new app password for "Mail"
+5. Copy the 16-character password
+
+### Security Notes:
+
+**NEVER commit actual API keys to public repositories!**
+- GitHub secrets stay encrypted and private
+- Files with secrets will be scanned and keys may be revoked
+- Always use placeholders in documentation
+- Keep a secure local backup of your keys (see SECRETS_BACKUP.md)
 
 ## Step 4: Enable GitHub Actions
 
