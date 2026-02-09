@@ -110,11 +110,17 @@ def cleanup_notion(days_old=30, status=None, dry_run=True):
         print(f"[*] Run with --no-dry-run to actually delete {len(pages_to_delete)} pages")
         return 0
 
+    # Check if running in CI environment (GitHub Actions, etc.)
+    is_ci = os.environ.get('CI', '').lower() == 'true'
+
     # Actual deletion
-    confirm = input(f"\n[!] Delete {len(pages_to_delete)} pages? (yes/no): ").strip().lower()
-    if confirm not in ['yes', 'y']:
-        print("[*] Cancelled. No pages deleted.")
-        return 0
+    if not is_ci:
+        confirm = input(f"\n[!] Delete {len(pages_to_delete)} pages? (yes/no): ").strip().lower()
+        if confirm not in ['yes', 'y']:
+            print("[*] Cancelled. No pages deleted.")
+            return 0
+    else:
+        print(f"[*] Running in CI mode - auto-confirming deletion of {len(pages_to_delete)} pages")
 
     print(f"\n[*] Deleting {len(pages_to_delete)} pages...")
     deleted_count = 0
