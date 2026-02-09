@@ -163,36 +163,7 @@ def extract_linkedin_draft_with_option(page_text: str) -> tuple[Optional[str], s
         return None, ""
 
     draft = '\n'.join(draft_lines).strip()
-
-    # Remove "Article Title:" and "Article URL:" lines if present
-        filtered_lines = []
-        for line in draft.split('\n'):
-            if not line.startswith('Article Title:') and not line.startswith('Article URL:'):
-                filtered_lines.append(line)
-
-        return '\n'.join(filtered_lines).strip(), "Default"
-
-    # Find marked option or default to A
-    selected_option = None
-    selected_option_name = ""
-
-    # First, look for a marked option
-    for opt_key, opt_data in options.items():
-        if opt_data['marked']:
-            selected_option = opt_data['content']
-            selected_option_name = opt_key.replace('Post Option ', 'Option ')
-            break
-
-    # If none marked, use Option A
-    if not selected_option and 'Post Option A' in options:
-        selected_option = options['Post Option A']['content']
-        selected_option_name = "Option A (default)"
-    elif not selected_option and options:
-        # Fallback to first available option
-        selected_option = list(options.values())[0]['content']
-        selected_option_name = list(options.keys())[0].replace('Post Option ', 'Option ')
-
-    return selected_option if selected_option else None, selected_option_name
+    return draft, "Default"
 
 
 def post_approved_from_notion(database_id: str, poll_interval: int = 60) -> None:
