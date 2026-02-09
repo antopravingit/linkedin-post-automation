@@ -40,14 +40,15 @@ def send_notification():
     recipient = os.getenv('NOTIFICATION_EMAIL', smtp_email)
 
     # Create email
+    article_count = len(urls)
     msg = MIMEMultipart()
-    msg['Subject'] = f'5 LinkedIn Articles Ready for Review - {datetime.now().strftime("%Y-%m-%d")}'
+    msg['Subject'] = f'{article_count} LinkedIn Articles Ready for Review - {datetime.now().strftime("%Y-%m-%d")}'
     msg['From'] = smtp_email
     msg['To'] = recipient
 
     # Email body
     body = f'''
-5 new LinkedIn articles are ready for your review (mix of technical + general).
+{article_count} new LinkedIn article{"s" if article_count != 1 else ""} ready for your review (mix of technical + general).
 
 Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}
 

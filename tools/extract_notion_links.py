@@ -16,11 +16,14 @@ def extract_links():
         print('No Notion URLs found')
         sys.exit(1)
 
-    print(f'Found {len(urls)} Notion pages')
+    # Deduplicate URLs while preserving order
+    unique_urls = list(dict.fromkeys(urls))
 
-    # Save URLs to file
+    print(f'Found {len(urls)} Notion pages ({len(unique_urls)} unique)')
+
+    # Save unique URLs to file
     with open('notion_links.txt', 'w') as f:
-        for url in urls:
+        for url in unique_urls:
             f.write(url + '\n')
 
     # Set GitHub output (for next steps)
