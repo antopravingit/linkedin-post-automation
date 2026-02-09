@@ -51,3 +51,7 @@ linkedin_token.json
 
 # Test files
 test_failure.py
+
+# Secret backups (NEVER commit these!)
+SECRETS_BACKUP.md
+*SECRETS*.md
