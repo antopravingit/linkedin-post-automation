@@ -9,6 +9,9 @@ import sys
 from notion_client import Client
 from dotenv import load_dotenv
 
+# Add parent directory to path to import from main package
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 load_dotenv()
 
 from linkedin_integration import get_page_status, extract_linkedin_draft_from_notion, post_to_linkedin

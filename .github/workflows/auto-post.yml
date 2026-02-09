@@ -40,7 +40,8 @@ jobs:
         echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> .env
         echo "NOTIFICATION_EMAIL=${{ secrets.NOTIFICATION_EMAIL }}" >> .env
 
-    - name: Upload LinkedIn token (if exists)
+    - name: Download LinkedIn token (if exists)
+      id: download-token
       continue-on-error: true
       uses: actions/download-artifact@v4
       with:
