@@ -120,10 +120,12 @@ def extract_linkedin_draft_with_option(page_text: str) -> tuple[Optional[str], s
         Tuple of (draft_text, article_info) where article_info describes which article
         Returns (None, "") if not found
     """
-    # Find all "LINKEDIN POST:" sections
+    # Find all "LINKEDIN POST:" sections (case-insensitive)
     import re
-    pattern = r'LINKEDIN POST:\s*\n(.*?)(?=\n\n(?:ARTICLE \d+|WHY THIS MATTERS|OPTION|\Z))'
-    matches = re.findall(pattern, page_text, re.DOTALL)
+    # Match both "LINKEDIN POST:" and "LinkedIn Post" with or without colon
+    # Stop at double newline + marker OR end of string
+    pattern = r'LINKEDIN POST\s*:?\s*\n(.*?)(?=\n\n(?:ARTICLE \d+|WHY THIS MATTERS|Article Details|OPTION)|\Z)'
+    matches = re.findall(pattern, page_text, re.DOTALL | re.IGNORECASE)
 
     if matches:
         # Get the first LinkedIn post found

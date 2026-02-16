@@ -52,51 +52,43 @@ for page in pages:
         page_text = ''
 
         for block in page_content.get('results', []):
-            # Handle all block types that can contain text
-            if block.get('type') == 'paragraph':
-                text = block['paragraph'].get('rich_text', [])
-                if text:
-                    page_text += text[0].get('plain_text', '') + '\n'
-            elif block.get('type') == 'heading_1':
-                text = block['heading_1'].get('rich_text', [])
-                if text:
-                    page_text += text[0].get('plain_text', '') + '\n'
-            elif block.get('type') == 'heading_2':
-                text = block['heading_2'].get('rich_text', [])
-                if text:
-                    page_text += text[0].get('plain_text', '') + '\n'
-            elif block.get('type') == 'heading_3':
-                text = block['heading_3'].get('rich_text', [])
-                if text:
-                    page_text += text[0].get('plain_text', '') + '\n'
-            elif block.get('type') == 'bulleted_list_item':
-                text = block['bulleted_list_item'].get('rich_text', [])
-                if text:
-                    page_text += text[0].get('plain_text', '') + '\n'
-            elif block.get('type') == 'numbered_list_item':
-                text = block['numbered_list_item'].get('rich_text', [])
-                if text:
-                    page_text += text[0].get('plain_text', '') + '\n'
-            elif block.get('type') == 'to_do':
-                text = block['to_do'].get('rich_text', [])
-                if text:
-                    page_text += text[0].get('plain_text', '') + '\n'
-            elif block.get('type') == 'toggle':
-                text = block['toggle'].get('rich_text', [])
-                if text:
-                    page_text += text[0].get('plain_text', '') + '\n'
-            elif block.get('type') == 'callout':
-                text = block['callout'].get('rich_text', [])
-                if text:
-                    page_text += text[0].get('plain_text', '') + '\n'
-            elif block.get('type') == 'quote':
-                text = block['quote'].get('rich_text', [])
-                if text:
-                    page_text += text[0].get('plain_text', '') + '\n'
-            elif block.get('type') == 'code':
-                code = block['code'].get('rich_text', [])
-                if code:
-                    page_text += code[0].get('plain_text', '') + '\n'
+            block_type = block.get('type')
+            has_children = block.get('has_children', False)
+
+            # Get all text from rich_text array (not just first element)
+            text_content = ''
+            if block_type in ['paragraph', 'heading_1', 'heading_2', 'heading_3',
+                              'bulleted_list_item', 'numbered_list_item', 'to_do',
+                              'toggle', 'callout', 'quote']:
+                rich_text = block.get(block_type, {}).get('rich_text', [])
+                for text_obj in rich_text:
+                    text_content += text_obj.get('plain_text', '')
+
+            if block_type == 'code':
+                rich_text = block.get('code', {}).get('rich_text', [])
+                for text_obj in rich_text:
+                    text_content += text_obj.get('plain_text', '')
+
+            # Add to page_text
+            if text_content:
+                page_text += text_content + '\n'
+
+            # If block has children, fetch them too
+            if has_children:
+                try:
+                    children = notion.blocks.children.list(block_id=block.get('id'))
+                    for child in children.get('results', []):
+                        child_type = child.get('type')
+                        child_text = ''
+                        if child_type in ['paragraph', 'heading_1', 'heading_2', 'heading_3',
+                                          'bulleted_list_item', 'numbered_list_item']:
+                            rich_text = child.get(child_type, {}).get('rich_text', [])
+                            for text_obj in rich_text:
+                                child_text += text_obj.get('plain_text', '')
+                        if child_text:
+                            page_text += child_text + '\n'
+                except:
+                    pass
 
         # Extract draft
         draft = extract_linkedin_draft_from_notion(page_text)
