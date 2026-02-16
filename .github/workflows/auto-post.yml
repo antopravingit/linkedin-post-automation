@@ -2,10 +2,10 @@ name: Auto-Post to LinkedIn
 
 on:
   schedule:
-    # Run during optimal posting hours (CST timezone = UTC-6):
-    # 9 AM, 11 AM, 1 PM, 3 PM, 5 PM CST
-    # = 3 PM, 5 PM, 7 PM, 9 PM, 11 PM UTC
-    - cron: '0 15,17,19,21,23 * * 1-5'
+    # Run every 30 minutes during business hours (CST timezone = UTC-6):
+    # 9 AM - 5 PM CST every 30 minutes
+    # = 3 PM - 11 PM UTC every 30 minutes
+    - cron: '0,30 15-23 * * 1-5'
   workflow_dispatch:  # Allow manual triggering from GitHub Actions tab
 
 jobs:
