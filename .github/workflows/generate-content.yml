@@ -2,8 +2,8 @@ name: Generate LinkedIn Content
 
 on:
   schedule:
-    # Run every Monday at 9:00 AM UTC
-    - cron: '0 9 * * 1'
+    # Run every Tuesday at 2:00 PM UTC (9:00 AM ET) - Optimal for engagement
+    - cron: '0 14 * * 2'
   workflow_dispatch:  # Allow manual triggering from GitHub Actions tab
 
 jobs:
