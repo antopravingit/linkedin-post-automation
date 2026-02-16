@@ -52,8 +52,45 @@ for page in pages:
         page_text = ''
 
         for block in page_content.get('results', []):
+            # Handle all block types that can contain text
             if block.get('type') == 'paragraph':
                 text = block['paragraph'].get('rich_text', [])
+                if text:
+                    page_text += text[0].get('plain_text', '') + '\n'
+            elif block.get('type') == 'heading_1':
+                text = block['heading_1'].get('rich_text', [])
+                if text:
+                    page_text += text[0].get('plain_text', '') + '\n'
+            elif block.get('type') == 'heading_2':
+                text = block['heading_2'].get('rich_text', [])
+                if text:
+                    page_text += text[0].get('plain_text', '') + '\n'
+            elif block.get('type') == 'heading_3':
+                text = block['heading_3'].get('rich_text', [])
+                if text:
+                    page_text += text[0].get('plain_text', '') + '\n'
+            elif block.get('type') == 'bulleted_list_item':
+                text = block['bulleted_list_item'].get('rich_text', [])
+                if text:
+                    page_text += text[0].get('plain_text', '') + '\n'
+            elif block.get('type') == 'numbered_list_item':
+                text = block['numbered_list_item'].get('rich_text', [])
+                if text:
+                    page_text += text[0].get('plain_text', '') + '\n'
+            elif block.get('type') == 'to_do':
+                text = block['to_do'].get('rich_text', [])
+                if text:
+                    page_text += text[0].get('plain_text', '') + '\n'
+            elif block.get('type') == 'toggle':
+                text = block['toggle'].get('rich_text', [])
+                if text:
+                    page_text += text[0].get('plain_text', '') + '\n'
+            elif block.get('type') == 'callout':
+                text = block['callout'].get('rich_text', [])
+                if text:
+                    page_text += text[0].get('plain_text', '') + '\n'
+            elif block.get('type') == 'quote':
+                text = block['quote'].get('rich_text', [])
                 if text:
                     page_text += text[0].get('plain_text', '') + '\n'
             elif block.get('type') == 'code':
