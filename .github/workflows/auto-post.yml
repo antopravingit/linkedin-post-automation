@@ -32,6 +32,7 @@ jobs:
       run: |
         echo "NOTION_API_KEY=${{ secrets.NOTION_API_KEY }}" >> .env
         echo "NOTION_DATABASE_ID=${{ secrets.NOTION_DATABASE_ID }}" >> .env
+        echo "LINKEDIN_ACCESS_TOKEN=${{ secrets.LINKEDIN_ACCESS_TOKEN }}" >> .env
         echo "LINKEDIN_CLIENT_ID=${{ secrets.LINKEDIN_CLIENT_ID }}" >> .env
         echo "LINKEDIN_CLIENT_SECRET=${{ secrets.LINKEDIN_CLIENT_SECRET }}" >> .env
         echo "LINKEDIN_REDIRECT_URI=http://localhost:8000/callback" >> .env
@@ -40,6 +41,14 @@ jobs:
         echo "SMTP_SERVER=${{ secrets.SMTP_SERVER }}" >> .env
         echo "SMTP_PORT=${{ secrets.SMTP_PORT }}" >> .env
         echo "NOTIFICATION_EMAIL=${{ secrets.NOTIFICATION_EMAIL }}" >> .env
+
+    - name: Download LinkedIn token (if exists)
+      id: download-token
+      continue-on-error: true
+      uses: actions/download-artifact@v4
+      with:
+        name: linkedin-token
+        path: .
 
     - name: Download LinkedIn token (if exists)
       id: download-token

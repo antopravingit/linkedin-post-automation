@@ -232,7 +232,11 @@ def save_access_token(token_data: dict) -> str:
 
 def load_access_token() -> Optional[str]:
     """
-    Load access token from file.
+    Load access token from environment variable or file.
+
+    Priority:
+    1. Environment variable LINKEDIN_ACCESS_TOKEN (for GitHub Actions)
+    2. Local file linkedin_token.json (for local development)
 
     Returns:
         Access token if exists and not expired, None otherwise
@@ -240,6 +244,13 @@ def load_access_token() -> Optional[str]:
     import json
     from datetime import datetime
 
+    # First, check environment variable (GitHub Secrets)
+    env_token = os.getenv('LINKEDIN_ACCESS_TOKEN')
+    if env_token:
+        print("[LinkedIn] Using access token from environment variable")
+        return env_token
+
+    # Otherwise, load from file
     token_file = os.path.join(os.path.dirname(__file__), 'linkedin_token.json')
 
     if not os.path.exists(token_file):
