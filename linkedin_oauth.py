@@ -3,6 +3,7 @@ LinkedIn OAuth Integration - Handles OAuth 2.0 authentication for LinkedIn API
 """
 
 import os
+import secrets
 import http.server
 import socketserver
 import webbrowser
@@ -28,9 +29,12 @@ def is_linkedin_configured() -> bool:
     return bool(config['client_id'] and config['client_secret'])
 
 
-def get_auth_url() -> str:
+def get_auth_url(state: str) -> str:
     """
-    Generate LinkedIn OAuth authorization URL.
+    Generate LinkedIn OAuth authorization URL with CSRF protection.
+
+    Args:
+        state: Random state parameter for CSRF protection
 
     Returns:
         Authorization URL to redirect user to
@@ -53,19 +57,23 @@ def get_auth_url() -> str:
     scope_encoded = quote(' '.join(scopes), safe='')
     redirect_uri_encoded = quote(config['redirect_uri'], safe='')
 
-    auth_url = (
-        f"https://www.linkedin.com/oauth/v2/authorization?"
-        f"response_type=code&"
-        f"client_id={config['client_id']}&"
-        f"redirect_uri={redirect_uri_encoded}&"
-        f"scope={scope_encoded}"
-    )
+    # Add state parameter for CSRF protection
+    from urllib.parse import urlencode
+    params = {
+        'response_type': 'code',
+        'client_id': config['client_id'],
+        'redirect_uri': config['redirect_uri'],
+        'scope': ' '.join(scopes),
+        'state': state  # CSRF protection
+    }
+
+    auth_url = f"https://www.linkedin.com/oauth/v2/authorization?{urlencode(params)}"
 
     return auth_url
 
 
 class OAuthCallbackHandler(http.server.SimpleHTTPRequestHandler):
-    """HTTP server to handle OAuth callback"""
+    """HTTP server to handle OAuth callback with state validation"""
 
     def do_GET(self):
         """Handle GET request for OAuth callback"""
@@ -74,8 +82,16 @@ class OAuthCallbackHandler(http.server.SimpleHTTPRequestHandler):
             query = parse_qs(urlparse(self.path).query)
 
             if 'code' in query:
+                # Validate state parameter to prevent CSRF attacks
+                if 'state' not in query:
+                    self.send_error(400, "Missing state parameter")
+                    return
+
+                if query['state'][0] != self.server.expected_state:
+                    self.send_error(400, "Invalid state parameter - possible CSRF attack")
+                    return
+
                 # Store the authorization code in the server instance
-                # Use the TCPServer's custom attribute
                 auth_code = query['code'][0]
                 self.server.auth_code = auth_code
 
@@ -114,7 +130,7 @@ class OAuthCallbackHandler(http.server.SimpleHTTPRequestHandler):
 
 def authenticate() -> dict:
     """
-    Perform OAuth 2.0 authentication flow.
+    Perform OAuth 2.0 authentication flow with state validation for CSRF protection.
 
     Returns:
         Dictionary with 'access_token' and 'expires_in'
@@ -123,8 +139,12 @@ def authenticate() -> dict:
 
     config = get_linkedin_config()
 
+    # Generate secure random state parameter for CSRF protection
+    state = secrets.token_urlsafe(32)
+    print(f"[Security] Generated CSRF state token")
+
     # Step 1: Open browser for user authorization
-    auth_url = get_auth_url()
+    auth_url = get_auth_url(state)
     print("\n" + "=" * 60)
     print("LINKEDIN OAUTH AUTHENTICATION")
     print("=" * 60)
@@ -135,15 +155,16 @@ def authenticate() -> dict:
     # Start local server to handle callback
     port = 8000
 
-    # Create a custom TCPServer class with auth_code attribute
+    # Create a custom TCPServer class with auth_code and expected_state attributes
     class OAuthServer(socketserver.TCPServer):
-        def __init__(self, *args, **kwargs):
+        def __init__(self, *args, expected_state, **kwargs):
             self.auth_code = None
             self.auth_error = None
+            self.expected_state = expected_state  # Store expected state for validation
             super().__init__(*args, **kwargs)
 
     try:
-        httpd = OAuthServer(("", port), OAuthCallbackHandler)
+        httpd = OAuthServer(("", port), OAuthCallbackHandler, expected_state=state)
 
         # Open browser
         webbrowser.open(auth_url)
@@ -180,7 +201,7 @@ def authenticate() -> dict:
         'client_secret': config['client_secret']
     }
 
-    response = requests.post(token_url, data=data)
+    response = requests.post(token_url, data=data, timeout=(10, 30))  # (connect, read) timeout
 
     if response.status_code != 200:
         raise Exception(f"Token exchange failed: {response.text}")

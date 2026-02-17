@@ -75,16 +75,22 @@ Or run locally: python approve.py
 
     # Send email
     try:
-        server = smtplib.SMTP(smtp_server, smtp_port)
-        server.starttls()
-        server.login(smtp_email, smtp_password)
-        server.send_message(msg)
-        server.quit()
+        # Use context manager for automatic cleanup and add timeout
+        with smtplib.SMTP(smtp_server, smtp_port, timeout=30) as server:
+            server.starttls()
+            server.login(smtp_email, smtp_password)
+            server.send_message(msg)
 
         print(f'[+] Email notification sent to {recipient}')
         print(f'    {len(urls)} articles ready for review')
         return 0
 
+    except smtplib.SMTPAuthenticationError:
+        print(f'[!] SMTP authentication failed for {smtp_email}')
+        return 1
+    except smtplib.SMTPException as e:
+        print(f'[!] SMTP error: {e}')
+        return 1
     except Exception as e:
         print(f'[!] Failed to send email: {e}')
         return 1

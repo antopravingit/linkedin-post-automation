@@ -7,6 +7,7 @@ import time
 from typing import Optional
 from linkedin_oauth import is_linkedin_configured as oauth_configured
 from linkedin_poster import post_with_auto_token
+from utils import extract_linkedin_draft_safe
 
 
 def is_linkedin_configured() -> bool:
@@ -96,17 +97,17 @@ def get_page_status(page: dict) -> str:
 
 def extract_linkedin_draft_from_notion(page_text: str) -> Optional[str]:
     """
-    Extract the LinkedIn draft from a Notion page content.
+    Extract the LinkedIn draft from a Notion page content with sanitization.
     Looks for "LINKEDIN POST:" sections (one per article).
 
     Args:
         page_text: The full page content from Notion
 
     Returns:
-        The LinkedIn draft text, or None if not found
+        The sanitized LinkedIn draft text, or None if not found
     """
-    draft, option_used = extract_linkedin_draft_with_option(page_text)
-    return draft
+    # Use safe extraction with sanitization
+    return extract_linkedin_draft_safe(page_text)
 
 
 def extract_linkedin_draft_with_option(page_text: str) -> tuple[Optional[str], str]:

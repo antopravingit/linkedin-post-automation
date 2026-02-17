@@ -173,8 +173,9 @@ def create_notion_pages_for_articles(approval_pack: str, database_id: Optional[s
                             "name": "Draft"
                         }
                     }
-            except:
-                pass  # Status property doesn't exist or can't be detected
+            except Exception:
+                # Status property doesn't exist or can't be detected - continue without it
+                pass  # Keep properties as-is (without Status field)
 
             # Parse article content
             parsed = parse_article_content(article_content)

@@ -87,8 +87,10 @@ for page in pages:
                                 child_text += text_obj.get('plain_text', '')
                         if child_text:
                             page_text += child_text + '\n'
-                except:
-                    pass
+                except Exception as e:
+                    # Log but don't fail - child blocks are optional
+                    import sys
+                    print(f'[Warning] Failed to fetch child blocks: {e}', file=sys.stderr)
 
         # Extract draft
         draft = extract_linkedin_draft_from_notion(page_text)

@@ -32,7 +32,7 @@ def post_to_linkedin_ugc(post_content: str, access_token: str) -> str:
         'X-Restli-Protocol-Version': '2.0.0'
     }
 
-    response = requests.get(profile_url, headers=headers)
+    response = requests.get(profile_url, headers=headers, timeout=(10, 30))
 
     if response.status_code != 200:
         raise Exception(f"Failed to get profile: {response.text}")
@@ -80,7 +80,7 @@ def post_to_linkedin_ugc(post_content: str, access_token: str) -> str:
         'LinkedIn-Version': '202401'
     }
 
-    response = requests.post(ugc_url, json=post_data, headers=headers)
+    response = requests.post(ugc_url, json=post_data, headers=headers, timeout=(10, 30))
 
     if response.status_code != 201:
         raise Exception(f"Failed to create post: {response.status_code} - {response.text}")
