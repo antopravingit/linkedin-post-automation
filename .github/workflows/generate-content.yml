@@ -2,9 +2,21 @@ name: Generate LinkedIn Content
 
 on:
   schedule:
-    # Run every Tuesday at 3:00 PM UTC (9:00 AM CST) - Optimal for engagement
-    - cron: '0 15 * * 2'
+    # Run Monday, Wednesday, Friday at 3:00 PM UTC (9:00 AM CST) - Optimal for engagement
+    - cron: '0 15 * * 1'  # Monday
+    - cron: '0 15 * * 3'  # Wednesday
+    - cron: '0 15 * * 5'  # Friday
   workflow_dispatch:  # Allow manual triggering from GitHub Actions tab
+    inputs:
+      mode:
+        description: 'Post generation mode'
+        required: false
+        default: 'personal_experience'
+        type: choice
+        options:
+          - personal_experience
+          - pure_personal
+          - traditional
 
 jobs:
   generate-content:
@@ -40,6 +52,8 @@ jobs:
         echo "NOTIFICATION_EMAIL=${{ secrets.NOTIFICATION_EMAIL }}" >> .env
 
     - name: Run LinkedIn Curator (Auto-Discovery)
+      env:
+        POST_MODE: ${{ github.event.inputs.mode || 'personal_experience' }}
       run: |
         echo "1" | python linkedin_curator.py 2>&1 | tee generation.log
 

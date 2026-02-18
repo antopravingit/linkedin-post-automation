@@ -63,27 +63,27 @@ def generate_linkedin_post(article: Article) -> str:
     key_point = extract_key_point(article.text, max_chars=200)
     title_lower = article.title.lower()
 
-    # Determine article type and create contextual opening
+    # Determine article type and create contextual opening (FIRST-PERSON)
     if any(word in title_lower for word in ["research", "study", "paper", "findings"]):
-        opening = "New research worth your time:"
-        closing = "This challenges some assumptions about what works in practice."
+        opening = "I just read some research that really made me think."
+        closing = "What I learned challenges some assumptions about what works in practice."
     elif any(word in title_lower for word in ["open-source", "beats", "outperforms"]):
-        opening = "Interesting development:"
+        opening = "Something I came across today really stuck with me."
         closing = "The open-source ecosystem continues to deliver strong alternatives to proprietary solutions."
     elif any(word in title_lower for word in ["report", "index", "survey", "data"]):
-        opening = "Noteworthy data:"
+        opening = "I've been looking at some data that caught my attention."
         closing = "Hard numbers help cut through the noise in fast-moving spaces."
     elif any(word in title_lower for word in ["breakthrough", "advance", "discover"]):
-        opening = "Promising direction:"
+        opening = "I just read about something that could be a game-changer."
         closing = "Progress often comes from unexpected places."
     elif any(word in title_lower for word in ["how", "guide", "tutorial", "best"]):
-        opening = "Practical insight:"
+        opening = "I just came across a practical insight worth sharing."
         closing = "Sometimes the most valuable advances are in better methods, not just new models."
     elif any(word in title_lower for word in ["risk", "challenge", "problem", "concern"]):
-        opening = "Important consideration:"
+        opening = "I've been thinking about an important consideration."
         closing = "Understanding limitations is just as important as celebrating capabilities."
     else:
-        opening = "Worth reading:"
+        opening = "I just read something that's worth your time."
         closing = "Articles like this help us look beyond the headlines to what's actually happening."
 
     # Build post (3-5 lines ideal, engaging)

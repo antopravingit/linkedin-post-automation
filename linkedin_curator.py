@@ -139,7 +139,103 @@ def main():
 
     choice = input("Choose option (1 or 2, default=1): ").strip()
 
-    # Get articles
+    # NEW: Ask for post generation mode
+    print("\n" + "=" * 60)
+    print("POST GENERATION MODE")
+    print("=" * 60)
+    print("\nHow would you like to generate posts?")
+    print("  1. Personal Experience - 'What I Learned' (from articles)")
+    print("  2. Pure Personal Story (no article needed)")
+    print("  3. Traditional Article Summary (original style)")
+    print()
+
+    mode_choice = input("Choose mode (1, 2, or 3, default=1): ").strip()
+
+    # Map choice to internal mode
+    if mode_choice == '2':
+        mode = "pure_personal"
+    elif mode_choice == '3':
+        mode = "traditional"
+    else:
+        mode = "personal_experience"  # Default
+
+    print(f"\n[*] Selected mode: {mode}")
+
+    # Handle pure personal story mode (no articles needed)
+    if mode == "pure_personal":
+        print("\n[*] Pure Personal Story Mode")
+        print("[*] You'll write about your own experience (no article needed)")
+
+        from personal_story_generator import (
+            collect_story_topic,
+            generate_personal_story_with_claude,
+            generate_personal_story_with_openai,
+            generate_template_personal_story
+        )
+
+        topic, story_type, length = collect_story_topic()
+
+        print(f"\n[*] Generating personal story about: {topic}")
+
+        if api_provider == "claude":
+            approval_pack = generate_personal_story_with_claude(topic, story_type, length)
+            print(f"\n[+] Generated with Claude API")
+        elif api_provider == "openai":
+            approval_pack = generate_personal_story_with_openai(topic, story_type, length)
+            print(f"\n[+] Generated with OpenAI API")
+        else:
+            print("[!] AI Generation: Not configured (using template-based generation)")
+            print("    Set ANTHROPIC_API_KEY or OPENAI_API_KEY to enable AI-powered stories")
+            approval_pack = generate_template_personal_story(topic, story_type)
+
+        # Output to file or Notion
+        filepath = None
+        notion_url = None
+
+        if notion_enabled:
+            try:
+                # For personal stories, create a single Notion page
+                from notion_integration import create_notion_page
+                notion_url = create_notion_page(approval_pack)
+                print(f"\n[+] Personal story pushed to Notion: {notion_url}")
+            except Exception as e:
+                print(f"\n[!] Notion integration failed: {e}")
+                print("[*] Falling back to file save...")
+                from draft_generator import save_approval_pack
+                filepath = save_approval_pack(approval_pack)
+                print(f"\n[+] Personal story saved to: {filepath}")
+        else:
+            # Always save to file if Notion is not enabled
+            from draft_generator import save_approval_pack
+            filepath = save_approval_pack(approval_pack)
+            print(f"\n[+] Personal story saved to: {filepath}")
+
+        # Print to console
+        print("\n" + "=" * 60)
+        print("PERSONAL STORY")
+        print("=" * 60)
+        print()
+        print(approval_pack)
+
+        # Summary
+        print("\n" + "=" * 60)
+        print("Story complete!")
+        print("=" * 60)
+
+        if notion_url:
+            print(f"\nReview in Notion: {notion_url}")
+        if filepath:
+            print(f"\nStory saved to: {filepath}")
+
+        print("\nNext steps:")
+        print("1. Review the story above")
+        print("2. Edit to add your personal details")
+        print("3. Make it more specific to your experience")
+        print("4. Post to LinkedIn when ready")
+
+        return  # Exit for pure personal story mode
+
+    # Get articles (for article-based modes)
     articles = []
 
     if choice == '2':
@@ -186,8 +282,8 @@ def main():
     # Generate approval pack (AI or template-based)
     if api_provider:
         try:
-            # Use AI to select and generate
-            approval_pack, provider_used = generate_approval_pack_ai(articles)
+            # Use AI to select and generate (pass mode for personal_experience vs traditional)
+            approval_pack, provider_used = generate_approval_pack_ai(articles, mode=mode)
             print(f"\n[+] Generated with {provider_used} API")
         except Exception as e:
             print(f"\n[!] AI generation failed: {e}")

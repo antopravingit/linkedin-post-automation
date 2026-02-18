@@ -24,12 +24,13 @@ def get_api_provider() -> Optional[Literal["claude", "openai"]]:
     return None
 
 
-def generate_with_claude(articles: list[Article]) -> str:
+def generate_with_claude(articles: list[Article], mode: str = "personal_experience") -> str:
     """
     Generate approval pack using Claude API.
 
     Args:
         articles: List of fetched Article objects
+        mode: Generation mode - "personal_experience" or "traditional"
 
     Returns:
         Approval pack as formatted string
@@ -44,6 +45,14 @@ def generate_with_claude(articles: list[Article]) -> str:
         raise ValueError("ANTHROPIC_API_KEY environment variable not set")
 
     client = anthropic.Anthropic(api_key=api_key)
+
+    # Select appropriate system prompt based on mode
+    if mode == "personal_experience":
+        from prompts import PERSONAL_EXPERIENCE_SYSTEM_PROMPT
+        system_prompt = PERSONAL_EXPERIENCE_SYSTEM_PROMPT
+    else:
+        from prompts import AI_SYSTEM_PROMPT
+        system_prompt = AI_SYSTEM_PROMPT
 
     # Prepare article summaries for Claude
     articles_text = ""
@@ -187,12 +196,13 @@ Do NOT stop at 3 articles - all 5 are required."""
     return approval_pack
 
 
-def generate_with_openai(articles: list[Article]) -> str:
+def generate_with_openai(articles: list[Article], mode: str = "personal_experience") -> str:
     """
     Generate approval pack using OpenAI API.
 
     Args:
         articles: List of fetched Article objects
+        mode: Generation mode - "personal_experience" or "traditional"
 
     Returns:
         Approval pack as formatted string
@@ -207,6 +217,14 @@ def generate_with_openai(articles: list[Article]) -> str:
         raise ValueError("OPENAI_API_KEY environment variable not set")
 
     client = openai.OpenAI(api_key=api_key)
+
+    # Select appropriate system prompt based on mode
+    if mode == "personal_experience":
+        from prompts import PERSONAL_EXPERIENCE_SYSTEM_PROMPT
+        system_prompt = PERSONAL_EXPERIENCE_SYSTEM_PROMPT
+    else:
+        from prompts import AI_SYSTEM_PROMPT
+        system_prompt = AI_SYSTEM_PROMPT
 
     # Prepare article summaries for GPT
     articles_text = ""
@@ -353,12 +371,13 @@ Do NOT stop at 3 articles - all 5 are required."""
     return approval_pack
 
 
-def generate_approval_pack_ai(articles: list[Article]) -> tuple[str, str]:
+def generate_approval_pack_ai(articles: list[Article], mode: str = "personal_experience") -> tuple[str, str]:
     """
     Generate approval pack using AI API (Claude or OpenAI).
 
     Args:
         articles: List of fetched Article objects
+        mode: Generation mode - "personal_experience" or "traditional"
 
     Returns:
         Tuple of (approval_pack_text, provider_used)
@@ -369,9 +388,9 @@ def generate_approval_pack_ai(articles: list[Article]) -> tuple[str, str]:
     provider = get_api_provider()
 
     if provider == "claude":
-        return generate_with_claude(articles), "Claude"
+        return generate_with_claude(articles, mode), "Claude"
     elif provider == "openai":
-        return generate_with_openai(articles), "OpenAI"
+        return generate_with_openai(articles, mode), "OpenAI"
     else:
         raise ValueError(
             "No API key found. Set ANTHROPIC_API_KEY or OPENAI_API_KEY "
