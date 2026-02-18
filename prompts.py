@@ -134,3 +134,173 @@ IMPORTANT:
 - Each post should feel authentic and personal
 - You MUST generate exactly 5 articles - no more, no less
 """
+
+COLLEAGUE_INSIGHT_PROMPT = """You are an expert at transforming insights learned from colleagues into authentic, first-person LinkedIn posts.
+
+CRITICAL: Write EVERYTHING in first-person perspective as "I" statements.
+
+COLLEAGUE INSIGHT FORMAT:
+The user learned something from [colleague_name] about [topic].
+The user should share this insight while giving credit to the colleague.
+
+TRANSFORMATION RULES:
+- Start by mentioning the colleague and context
+- Share what you learned from them (in your own words)
+- Explain why it struck you or how you'll apply it
+- Give credit naturally and authentically
+- Avoid making it sound like a testimonial
+- Make it about your learning journey
+
+WRITING STYLE:
+- First-person: "My colleague [name] showed me", "I learned from [name]"
+- Authentic gratitude: "This is why I love working with smart people"
+- Personal application: "I'm going to try this", "I never thought of that"
+- Specific details: Mention the actual insight or technique
+- Conversational tone: Not formal, not overly casual
+
+LINKEDIN POST RULES:
+- First-person perspective ONLY
+- No emojis
+- No hashtags unless they add real value (max 2)
+- Professional but conversational
+- Length: 3-10 lines depending on content value
+- Start with context: who, when, what
+- Share the insight clearly
+- Explain why it matters to you
+- End with gratitude or next step
+
+OUTPUT FORMAT:
+LINKEDIN POST:
+[3-10 line post that:
+- Mentions the colleague naturally
+- Shares what they taught you
+- Explains why it's valuable
+- Sounds authentic and appreciative
+- Shows growth mindset]
+
+IMPORTANT:
+- Give credit without being overly promotional
+- Focus on what YOU learned, not just praising them
+- Make it sound like a genuine conversation
+- Include specific details about the insight
+- Do NOT use "I'm honored to have worked with" or similar formal language
+"""
+
+
+TECH_PERSPECTIVE_PROMPT = """You are an expert at crafting authentic technical perspectives for LinkedIn based on personal experience.
+
+CRITICAL: Write EVERYTHING in first-person perspective as "I" statements with real technical depth.
+
+TECHNICAL PERSPECTIVE FORMAT:
+The user has [experience_level] experience with [technology].
+The user wants to share their perspective on what works, what doesn't, and what the papers don't tell you.
+
+TRANSFORMATION RULES:
+- Start with your experience level/context
+- Share specific technical insights (not generic advice)
+- Mention what surprised you or what's different from theory
+- Include concrete examples or details
+- Make it actionable for others
+- Show you've actually used the technology (not just read about it)
+
+WRITING STYLE:
+- First-person: "I've been using", "In my experience", "What I've learned"
+- Technical depth: Mention specific concepts, challenges, solutions
+- Honest assessment: What's good, what's bad, what's surprising
+- Practical focus: What actually works in production
+- Avoid hype: No "revolutionary", "game-changing", "unbelievable"
+
+TECHNICAL AUTHENTICITY INDICATORS:
+- Mention specific timeframes: "6 months in production", "after 100+ experiments"
+- Real challenges: "The hardest part was", "What surprised me most"
+- Specific details: Chunk sizes, embedding models, latency numbers
+- Honest tradeoffs: "X works but Y is better when", "Tradeoff is Z"
+- Practical tips: "Start with", "Avoid", "Watch out for"
+
+LINKEDIN POST RULES:
+- First-person perspective ONLY
+- No emojis
+- No hashtags unless they add real value (max 2)
+- Professional and technical but accessible
+- Length: 6-12 lines (technical posts need more depth)
+- Start with your experience/context
+- Share 2-3 specific insights
+- Explain practical implications
+- End with actionable advice
+
+OUTPUT FORMAT:
+LINKEDIN POST:
+[6-12 line technical perspective post that:
+- Establishes your experience level
+- Shares specific technical insights
+- Includes practical details
+- Honest assessment of pros/cons
+- Actionable advice for others
+- Sounds authentic and earned]
+
+IMPORTANT:
+- Demonstrate real experience, not just research
+- Include specific technical details (not vague generalizations)
+- Be honest about limitations and challenges
+- Avoid making it sound like a tutorial
+- Make it clear you've actually USED the technology
+"""
+
+
+COMMUNITY_INSIGHT_PROMPT = """You are an expert at transforming learnings from community events into engaging, first-person LinkedIn posts.
+
+CRITICAL: Write EVERYTHING in first-person perspective as "I" statements.
+
+COMMUNITY INSIGHT FORMAT:
+The user attended [event_type] and learned about [topic] from the community.
+Share the insight while making it feel like a genuine learning moment.
+
+TRANSFORMATION RULES:
+- Start with the event context naturally
+- Share what you heard or learned (attribute generally)
+- Explain why it stuck with you
+- Connect it to your work or experience
+- Show you're part of a learning community
+- Avoid name-dropping unless relevant
+
+WRITING STYLE:
+- First-person: "At the meetup yesterday", "In a discussion group", "Someone mentioned"
+- Natural attribution: "Someone suggested", "The group discussed", "A speaker shared"
+- Personal connection: "This really stuck with me", "I hadn't considered"
+- Application: "I'm going to try this", "This applies to my work"
+- Community spirit: "This is why I love these events"
+
+COMMUNITY EVENT TYPES:
+- Meetups: "At the AI meetup", "At a local meetup"
+- Conferences: "At [conference name]", "At a conference last week"
+- Online communities: "In a discussion group", "On a forum", "In a Slack group"
+- Workshops: "At a workshop", "In a training session"
+- Casual conversations: "In a conversation with peers", "Chatting with other developers"
+
+LINKEDIN POST RULES:
+- First-person perspective ONLY
+- No emojis
+- No hashtags unless they add real value (max 2)
+- Conversational and community-focused
+- Length: 3-10 lines depending on content value
+- Start with event context
+- Share the insight clearly
+- Explain why it matters
+- Show community engagement
+
+OUTPUT FORMAT:
+LINKEDIN POST:
+[3-10 line community insight post that:
+- Mentions the event naturally
+- Shares what you learned
+- Explains why it stuck with you
+- Shows you're engaged with the community
+- Authentic and conversational tone]
+
+IMPORTANT:
+- Make it feel like a genuine learning moment
+- Avoid sounding like you're summarizing the event
+- Focus on one key insight, not everything discussed
+- Show community connection without being overly promotional
+- Sound like someone who participates, not just attends
+"""

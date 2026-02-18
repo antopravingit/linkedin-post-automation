@@ -36,6 +36,163 @@ from draft_generator import generate_approval_pack, save_approval_pack
 from notion_integration import is_notion_configured, create_notion_page, create_notion_pages_for_articles
 from ai_generator import get_api_provider, generate_approval_pack_ai
 from article_discovery import discover_and_fetch
+from multi_mode_generator import (
+    collect_colleague_insight_input,
+    collect_tech_perspective_input,
+    collect_community_insight_input,
+    generate_colleague_insight_with_claude,
+    generate_colleague_insight_with_openai,
+    generate_template_colleague_insight,
+    generate_tech_perspective_with_claude,
+    generate_tech_perspective_with_openai,
+    generate_template_tech_perspective,
+    generate_community_insight_with_claude,
+    generate_community_insight_with_openai,
+    generate_template_community_insight
+)
+from personal_story_generator import (
+    collect_story_topic,
+    generate_personal_story_with_claude,
+    generate_personal_story_with_openai,
+    generate_template_personal_story
+)
+
+
+def handle_non_article_content(content_type: str, api_provider: str, notion_enabled: bool):
+    """
+    Handle content types that don't require articles.
+
+    Args:
+        content_type: Type of content (colleague_insight, tech_perspective, community_insight, personal_experience)
+        api_provider: AI provider (claude, openai, or None)
+        notion_enabled: Whether Notion integration is enabled
+    """
+    approval_pack = None
+
+    if content_type == "colleague_insight":
+        print("\n[*] Colleague Insight Mode")
+        print("[*] Share something you learned from a colleague or team member")
+
+        # Collect input
+        colleague_name, topic, what_you_learned, your_experience = collect_colleague_insight_input()
+
+        print(f"\n[*] Generating post about: {topic}")
+
+        # Generate post
+        if api_provider == "claude":
+            approval_pack = generate_colleague_insight_with_claude(colleague_name, topic, what_you_learned, your_experience)
+            print(f"\n[+] Generated with Claude API")
+        elif api_provider == "openai":
+            approval_pack = generate_colleague_insight_with_openai(colleague_name, topic, what_you_learned, your_experience)
+            print(f"\n[+] Generated with OpenAI API")
+        else:
+            print("[!] AI Generation: Not configured (using template-based generation)")
+            approval_pack = generate_template_colleague_insight(colleague_name, topic, what_you_learned)
+
+    elif content_type == "tech_perspective":
+        print("\n[*] Technical Perspective Mode")
+        print("[*] Share your technical perspective based on real experience")
+
+        # Collect input
+        technology, experience_level, perspective_focus, specific_insights = collect_tech_perspective_input()
+
+        print(f"\n[*] Generating post about: {technology}")
+
+        # Generate post
+        if api_provider == "claude":
+            approval_pack = generate_tech_perspective_with_claude(technology, experience_level, perspective_focus, specific_insights)
+            print(f"\n[+] Generated with Claude API")
+        elif api_provider == "openai":
+            approval_pack = generate_tech_perspective_with_openai(technology, experience_level, perspective_focus, specific_insights)
+            print(f"\n[+] Generated with OpenAI API")
+        else:
+            print("[!] AI Generation: Not configured (using template-based generation)")
+            approval_pack = generate_template_tech_perspective(technology, experience_level, perspective_focus)
+
+    elif content_type == "community_insight":
+        print("\n[*] Community Insight Mode")
+        print("[*] Share something you learned from a community event")
+
+        # Collect input
+        event, topic, what_you_heard, your_context = collect_community_insight_input()
+
+        print(f"\n[*] Generating post about: {topic}")
+
+        # Generate post
+        if api_provider == "claude":
+            approval_pack = generate_community_insight_with_claude(event, topic, what_you_heard, your_context)
+            print(f"\n[+] Generated with Claude API")
+        elif api_provider == "openai":
+            approval_pack = generate_community_insight_with_openai(event, topic, what_you_heard, your_context)
+            print(f"\n[+] Generated with OpenAI API")
+        else:
+            print("[!] AI Generation: Not configured (using template-based generation)")
+            approval_pack = generate_template_community_insight(event, topic, what_you_heard)
+
+    elif content_type == "personal_experience":
+        print("\n[*] Personal Experience Mode")
+        print("[*] Share your own learning or experience")
+
+        # Collect input
+        topic, story_type, length = collect_story_topic()
+
+        print(f"\n[*] Generating personal story about: {topic}")
+
+        # Generate post
+        if api_provider == "claude":
+            approval_pack = generate_personal_story_with_claude(topic, story_type, length)
+            print(f"\n[+] Generated with Claude API")
+        elif api_provider == "openai":
+            approval_pack = generate_personal_story_with_openai(topic, story_type, length)
+            print(f"\n[+] Generated with OpenAI API")
+        else:
+            print("[!] AI Generation: Not configured (using template-based generation)")
+            approval_pack = generate_template_personal_story(topic, story_type)
+
+    # Output to file or Notion
+    if approval_pack:
+        filepath = None
+        notion_url = None
+
+        if notion_enabled:
+            try:
+                from notion_integration import create_notion_page
+                notion_url = create_notion_page(approval_pack)
+                print(f"\n[+] Post pushed to Notion: {notion_url}")
+            except Exception as e:
+                print(f"\n[!] Notion integration failed: {e}")
+                print("[*] Falling back to file save...")
+                from draft_generator import save_approval_pack
+                filepath = save_approval_pack(approval_pack)
+                print(f"\n[+] Post saved to: {filepath}")
+        else:
+            # Always save to file if Notion is not enabled
+            from draft_generator import save_approval_pack
+            filepath = save_approval_pack(approval_pack)
+            print(f"\n[+] Post saved to: {filepath}")
+
+        # Print to console
+        print("\n" + "=" * 60)
+        print("LINKEDIN POST")
+        print("=" * 60)
+        print()
+        print(approval_pack)
+
+        # Summary
+        print("\n" + "=" * 60)
+        print("Post ready!")
+        print("=" * 60)
+
+        if notion_url:
+            print(f"\nReview in Notion: {notion_url}")
+        if filepath:
+            print(f"\nPost saved to: {filepath}")
+
+        print("\nNext steps:")
+        print("1. Review the post above")
+        print("2. Edit to add more specific details if desired")
+        print("3. Make it authentic to your voice")
+        print("4. Post to LinkedIn when ready")
 
 
 def print_header():
@@ -139,101 +296,38 @@ def main():
 
     choice = input("Choose option (1 or 2, default=1): ").strip()
 
-    # NEW: Ask for post generation mode
+    # NEW: Ask for content type
     print("\n" + "=" * 60)
-    print("POST GENERATION MODE")
+    print("CONTENT TYPE")
     print("=" * 60)
-    print("\nHow would you like to generate posts?")
-    print("  1. Personal Experience - 'What I Learned' (from articles)")
-    print("  2. Pure Personal Story (no article needed)")
-    print("  3. Traditional Article Summary (original style)")
+    print("\nWhat type of post would you like to create?")
+    print("  1. Personal Experience (your own learnings)")
+    print("  2. Learned from Colleagues/Team")
+    print("  3. Technology Deep Dive (your perspective)")
+    print("  4. Community Insights (meetups, conferences)")
+    print("  5. Article-Based (auto-discovery or manual URLs)")
     print()
 
-    mode_choice = input("Choose mode (1, 2, or 3, default=1): ").strip()
+    content_type_choice = input("Choose content type (1-5, default=5): ").strip()
 
-    # Map choice to internal mode
-    if mode_choice == '2':
-        mode = "pure_personal"
-    elif mode_choice == '3':
-        mode = "traditional"
+    # Map choice to content type
+    if content_type_choice == '1':
+        content_type = "personal_experience"
+    elif content_type_choice == '2':
+        content_type = "colleague_insight"
+    elif content_type_choice == '3':
+        content_type = "tech_perspective"
+    elif content_type_choice == '4':
+        content_type = "community_insight"
     else:
-        mode = "personal_experience"  # Default
+        content_type = "article_based"  # Default
 
-    print(f"\n[*] Selected mode: {mode}")
+    print(f"\n[*] Selected content type: {content_type}")
 
-    # Handle pure personal story mode (no articles needed)
-    if mode == "pure_personal":
-        print("\n[*] Pure Personal Story Mode")
-        print("[*] You'll write about your own experience (no article needed)")
-
-        from personal_story_generator import (
-            collect_story_topic,
-            generate_personal_story_with_claude,
-            generate_personal_story_with_openai,
-            generate_template_personal_story
-        )
-
-        topic, story_type, length = collect_story_topic()
-
-        print(f"\n[*] Generating personal story about: {topic}")
-
-        if api_provider == "claude":
-            approval_pack = generate_personal_story_with_claude(topic, story_type, length)
-            print(f"\n[+] Generated with Claude API")
-        elif api_provider == "openai":
-            approval_pack = generate_personal_story_with_openai(topic, story_type, length)
-            print(f"\n[+] Generated with OpenAI API")
-        else:
-            print("[!] AI Generation: Not configured (using template-based generation)")
-            print("    Set ANTHROPIC_API_KEY or OPENAI_API_KEY to enable AI-powered stories")
-            approval_pack = generate_template_personal_story(topic, story_type)
-
-        # Output to file or Notion
-        filepath = None
-        notion_url = None
-
-        if notion_enabled:
-            try:
-                # For personal stories, create a single Notion page
-                from notion_integration import create_notion_page
-                notion_url = create_notion_page(approval_pack)
-                print(f"\n[+] Personal story pushed to Notion: {notion_url}")
-            except Exception as e:
-                print(f"\n[!] Notion integration failed: {e}")
-                print("[*] Falling back to file save...")
-                from draft_generator import save_approval_pack
-                filepath = save_approval_pack(approval_pack)
-                print(f"\n[+] Personal story saved to: {filepath}")
-        else:
-            # Always save to file if Notion is not enabled
-            from draft_generator import save_approval_pack
-            filepath = save_approval_pack(approval_pack)
-            print(f"\n[+] Personal story saved to: {filepath}")
-
-        # Print to console
-        print("\n" + "=" * 60)
-        print("PERSONAL STORY")
-        print("=" * 60)
-        print()
-        print(approval_pack)
-
-        # Summary
-        print("\n" + "=" * 60)
-        print("Story complete!")
-        print("=" * 60)
-
-        if notion_url:
-            print(f"\nReview in Notion: {notion_url}")
-        if filepath:
-            print(f"\nStory saved to: {filepath}")
-
-        print("\nNext steps:")
-        print("1. Review the story above")
-        print("2. Edit to add your personal details")
-        print("3. Make it more specific to your experience")
-        print("4. Post to LinkedIn when ready")
-
-        return  # Exit for pure personal story mode
+    # Handle non-article based content types (no articles needed)
+    if content_type != "article_based":
+        handle_non_article_content(content_type, api_provider, notion_enabled)
+        return  # Exit after handling non-article content
 
     # Get articles (for article-based modes)
     articles = []
