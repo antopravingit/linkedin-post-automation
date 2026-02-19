@@ -71,6 +71,11 @@ AUTHENTICITY GUIDELINES:
 - Use natural language (contractions, occasional incomplete sentences)
 - Avoid: "revolutionary", "game-changing", "unbelievable", "amazing"
 - Prefer: "interesting", "surprising", "challenging", "worth considering"
+- CRITICAL: NO em dashes (—) - use regular commas, periods, or semicolons instead
+- Avoid: "word—word" format - use "word, word" or separate sentences instead
+- CRITICAL: Use STRAIGHT QUOTES only - use ' not ' and " not "
+- Never use curly/smart quotes - they display as junk on LinkedIn
+- Always use straight apostrophes in contractions: it's, don't, won't, I'm, we're
 
 Write authentically about: {topic}
 """
@@ -168,6 +173,11 @@ AUTHENTICITY GUIDELINES:
 - Use natural language (contractions, occasional incomplete sentences)
 - Avoid: "revolutionary", "game-changing", "unbelievable", "amazing"
 - Prefer: "interesting", "surprising", "challenging", "worth considering"
+- CRITICAL: NO em dashes (—) - use regular commas, periods, or semicolons instead
+- Avoid: "word—word" format - use "word, word" or separate sentences instead
+- CRITICAL: Use STRAIGHT QUOTES only - use ' not ' and " not "
+- Never use curly/smart quotes - they display as junk on LinkedIn
+- Always use straight apostrophes in contractions: it's, don't, won't, I'm, we're
 
 Write authentically about: {topic}
 """

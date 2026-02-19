@@ -111,7 +111,13 @@ def process_content_plan(config: dict, api_provider: Optional[str] = None) -> li
     load_dotenv()
 
     import os
-    from notion_integration import is_notion_configured, create_notion_page
+    from notion_integration import is_notion_configured
+    try:
+        from notion_integration_v2 import create_notion_page_improved as create_notion_page
+        print("[*] Using improved Notion formatting")
+    except ImportError:
+        from notion_integration import create_notion_page
+        print("[*] Using standard Notion formatting")
     from draft_generator import save_approval_pack
 
     # Determine AI provider if not specified

@@ -168,6 +168,11 @@ LINKEDIN POST RULES:
 - Share the insight clearly
 - Explain why it matters to you
 - End with gratitude or next step
+- CRITICAL: NO em dashes (—) - use regular commas, periods, or semicolons instead
+- Avoid: "word—word" format - use "word, word" or separate sentences instead
+- CRITICAL: Use STRAIGHT QUOTES only - use ' not ' and " not "
+- Never use curly/smart quotes (', ', ", ") - they display as junk on LinkedIn
+- Always use straight apostrophes: it's, developer's, don't, won't
 
 OUTPUT FORMAT:
 LINKEDIN POST:
@@ -227,6 +232,8 @@ LINKEDIN POST RULES:
 - Share 2-3 specific insights
 - Explain practical implications
 - End with actionable advice
+- CRITICAL: NO em dashes (—) - use regular commas, periods, or semicolons instead
+- Avoid: "word—word" format - use "word, word" or separate sentences instead
 
 OUTPUT FORMAT:
 LINKEDIN POST:
@@ -287,6 +294,8 @@ LINKEDIN POST RULES:
 - Share the insight clearly
 - Explain why it matters
 - Show community engagement
+- CRITICAL: NO em dashes (—) - use regular commas, periods, or semicolons instead
+- Avoid: "word—word" format - use "word, word" or separate sentences instead
 
 OUTPUT FORMAT:
 LINKEDIN POST:

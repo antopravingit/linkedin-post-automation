@@ -403,8 +403,8 @@ def create_notion_page(approval_pack: str, database_id: Optional[str] = None) ->
             },
             {
                 "object": "block",
-                "type": "code",
-                "code": {
+                "type": "quote",
+                "quote": {
                     "rich_text": [
                         {
                             "type": "text",
@@ -412,8 +412,7 @@ def create_notion_page(approval_pack: str, database_id: Optional[str] = None) ->
                                 "content": approval_pack
                             }
                         }
-                    ],
-                    "language": "plain text"
+                    ]
                 }
             },
             {
