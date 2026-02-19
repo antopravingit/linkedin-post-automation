@@ -240,17 +240,24 @@ def post_approved_from_notion(database_id: str, poll_interval: int = 60) -> None
                 # Get page content
                 page_content = notion.blocks.children.list(block_id=page_id)
 
-                # Extract text from blocks
+                # Extract text from blocks (iterate all rich_text elements)
                 page_text = ""
                 for block in page_content.get("results", []):
-                    if block.get("type") == "paragraph":
-                        text = block["paragraph"].get("rich_text", [])
-                        if text:
-                            page_text += text[0].get("plain_text", "") + "\n"
-                    elif block.get("type") == "code":
-                        code = block["code"].get("rich_text", [])
-                        if code:
-                            page_text += code[0].get("plain_text", "") + "\n"
+                    block_type = block.get("type")
+
+                    # Get all text from rich_text array
+                    if block_type == "paragraph":
+                        rich_text = block.get("paragraph", {}).get("rich_text", [])
+                        for text_obj in rich_text:
+                            page_text += text_obj.get("plain_text", "") + "\n"
+                    elif block_type == "code":
+                        rich_text = block.get("code", {}).get("rich_text", [])
+                        for text_obj in rich_text:
+                            page_text += text_obj.get("plain_text", "") + "\n"
+                    elif block_type in ["heading_1", "heading_2", "heading_3"]:
+                        rich_text = block.get(block_type, {}).get("rich_text", [])
+                        for text_obj in rich_text:
+                            page_text += text_obj.get("plain_text", "") + "\n"
 
                 # Extract LinkedIn draft
                 draft, option_used = extract_linkedin_draft_with_option(page_text)
@@ -267,19 +274,47 @@ def post_approved_from_notion(database_id: str, poll_interval: int = 60) -> None
                         # Post to LinkedIn
                         post_url = post_to_linkedin(draft)
 
-                        # Update Notion status to "Posted"
+                        # Update Notion status to "Posted" (find property dynamically)
                         try:
-                            notion.pages.update(
-                                page_id=page_id,
-                                properties={
-                                    "Status": {
-                                        "status": {
-                                            "name": "Posted"
+                            # Find status property
+                            status_prop = None
+                            status_type = None
+                            for prop_name, prop_data in page.get("properties", {}).items():
+                                if prop_data.get("type") in ["status", "select"]:
+                                    if status_type != "status":
+                                        status_prop = prop_name
+                                        status_type = prop_data.get("type")
+                                    if prop_data.get("type") == "status":
+                                        status_prop = prop_name
+                                        status_type = "status"
+                                        break
+
+                            if status_prop:
+                                if status_type == "status":
+                                    notion.pages.update(
+                                        page_id=page_id,
+                                        properties={
+                                            status_prop: {
+                                                "status": {
+                                                    "name": "Posted"
+                                                }
+                                            }
                                         }
-                                    }
-                                }
-                            )
-                            print(f"[Auto-Poster] Updated Notion status to 'Posted'")
+                                    )
+                                else:  # "select" type
+                                    notion.pages.update(
+                                        page_id=page_id,
+                                        properties={
+                                            status_prop: {
+                                                "select": {
+                                                    "name": "Posted"
+                                                }
+                                            }
+                                        }
+                                    )
+                                print(f"[Auto-Poster] Updated Notion status to 'Posted'")
+                            else:
+                                print(f"[Auto-Poster] Warning: No status property found")
                         except Exception as e:
                             print(f"[Auto-Poster] Could not update Notion status: {e}")
                             print(f"[Auto-Poster] (You may need to manually update it)")

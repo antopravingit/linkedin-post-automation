@@ -41,9 +41,19 @@ for page in pages:
     page_id = page.get('id')
     status = get_page_status(page)
 
+    # Skip already posted
+    if status == 'Posted':
+        continue
+
     if status == 'Approved':
-        title_obj = page.get('properties', {}).get('Title', {}).get('title', [])
-        title = title_obj[0].get('plain_text', 'Unknown') if title_obj else 'Unknown'
+        # Get title dynamically
+        title = 'Unknown'
+        for prop_name, prop_data in page.get('properties', {}).items():
+            if prop_data.get('type') == 'title':
+                title_arr = prop_data.get('title', [])
+                if title_arr:
+                    title = title_arr[0].get('plain_text', 'Unknown')
+                break
 
         print(f'[Auto-Poster] Found approved post: {title}')
 
@@ -55,7 +65,7 @@ for page in pages:
             block_type = block.get('type')
             has_children = block.get('has_children', False)
 
-            # Get all text from rich_text array (not just first element)
+            # Get all text from rich_text array (iterate all elements)
             text_content = ''
             if block_type in ['paragraph', 'heading_1', 'heading_2', 'heading_3',
                               'bulleted_list_item', 'numbered_list_item', 'to_do',
@@ -64,7 +74,7 @@ for page in pages:
                 for text_obj in rich_text:
                     text_content += text_obj.get('plain_text', '')
 
-            if block_type == 'code':
+            elif block_type == 'code':
                 rich_text = block.get('code', {}).get('rich_text', [])
                 for text_obj in rich_text:
                     text_content += text_obj.get('plain_text', '')
@@ -82,6 +92,7 @@ for page in pages:
                         child_text = ''
                         if child_type in ['paragraph', 'heading_1', 'heading_2', 'heading_3',
                                           'bulleted_list_item', 'numbered_list_item']:
+                            # Fix: iterate all rich_text elements
                             rich_text = child.get(child_type, {}).get('rich_text', [])
                             for text_obj in rich_text:
                                 child_text += text_obj.get('plain_text', '')
@@ -92,7 +103,7 @@ for page in pages:
                     import sys
                     print(f'[Warning] Failed to fetch child blocks: {e}', file=sys.stderr)
 
-        # Extract draft
+        # Extract draft with sanitization
         draft = extract_linkedin_draft_from_notion(page_text)
 
         if draft:
@@ -100,17 +111,45 @@ for page in pages:
                 print(f'[Auto-Poster] Posting to LinkedIn...')
                 post_url = post_to_linkedin(draft)
 
-                # Update Notion status
-                notion.pages.update(
-                    page_id=page_id,
-                    properties={
-                        'Status': {
-                            'status': {
-                                'name': 'Posted'
+                # Update Notion status (find status property dynamically)
+                status_prop = None
+                status_type = None
+                for prop_name, prop_data in page.get('properties', {}).items():
+                    if prop_data.get('type') in ['status', 'select']:
+                        # Prefer 'status' type over 'select'
+                        if status_type != 'status':
+                            status_prop = prop_name
+                            status_type = prop_data.get('type')
+                        if prop_data.get('type') == 'status':
+                            status_prop = prop_name
+                            status_type = 'status'
+                            break
+
+                if status_prop:
+                    if status_type == 'status':
+                        notion.pages.update(
+                            page_id=page_id,
+                            properties={
+                                status_prop: {
+                                    'status': {
+                                        'name': 'Posted'
+                                    }
+                                }
                             }
-                        }
-                    }
-                )
+                        )
+                    else:  # 'select' type
+                        notion.pages.update(
+                            page_id=page_id,
+                            properties={
+                                status_prop: {
+                                    'select': {
+                                        'name': 'Posted'
+                                    }
+                                }
+                            }
+                        )
+                else:
+                    print('[Warning] No status property found, cannot update')
 
                 print(f'[Auto-Poster] Successfully posted!')
                 print(f'[Auto-Poster] Post URL: {post_url}')
