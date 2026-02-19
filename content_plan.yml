@@ -1,0 +1,43 @@
+# LinkedIn Content Plan
+# Generate multiple posts at once using this config file
+
+week_of: "2025-02-18"
+
+posts:
+  # Personal Experience
+  - type: personal
+    topic: A mistake I made with AI deployment
+    story_type: challenge_overcome
+    length: medium
+
+  # Learned from Colleague
+  - type: colleague
+    name: Sarah Chen
+    topic: LLM hallucination techniques
+    learned: She showed me a fact-checking prompt technique that uses opposing viewpoints
+    experience: I've been fighting hallucinations for months
+
+  # Technology Perspective
+  - type: tech
+    technology: RAG systems
+    experience: 6 months in production
+    perspective: what papers don't tell you
+    insights: Chunk size matters more than anyone admits, hybrid search wins
+
+  # Community Insight
+  - type: community
+    event: AI meetup
+    topic: Prompt engineering tips
+    heard: Someone suggested writing prompts like you're explaining to a smart intern
+    context: I tried this the next day and it worked great
+
+  # More examples...
+  # - type: colleague
+  #   name: Mike Johnson
+  #   topic: Database optimization
+  #   learned: Composite indexes changed everything for our query performance
+  #
+  # - type: tech
+  #   technology: LangChain
+  #   experience: 1 year of use
+  #   perspective: production reality vs hype
