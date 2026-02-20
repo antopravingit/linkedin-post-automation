@@ -55,7 +55,7 @@ jobs:
       env:
         POST_MODE: ${{ github.event.inputs.mode || 'personal_experience' }}
       run: |
-        echo "1" | python linkedin_curator.py 2>&1 | tee generation.log
+        printf "1\n5\n" | python linkedin_curator.py 2>&1 | tee generation.log
 
     - name: Extract Notion Links
       run: python tools/extract_notion_links.py
